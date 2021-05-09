@@ -1,13 +1,12 @@
 var $ = require('jquery');
-var trytes = require('trytes');
-var trypto = require('tryte-encrypt');
+var trypto = require('../del_lib/iota-paper-encryption');
 var qrcode = require('qrcode');
 var jsQR = require('jsqr');
-var IOTA = require('iota.lib.js');
+//var IOTA = require('iota.lib.js');
 var Logo = require('./logo.js');
 
-const iota = new IOTA({});
-const IOTACHAR = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+//const iota = new IOTA({});
+//const IOTACHAR = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const tangleUrl = 'https://thetangle.org/address/';
 
 //var seed = 'A999TEST999SEED99999999999999999999999999999999999999999999999999999999999999999Z';
@@ -19,7 +18,7 @@ $(document).ready(function () {
     $('#warning').addClass('warning').html('&#9888; Do not scan or enter actual seeds unless you are offline in a safe environment! &#9888;'
       + '<br/> You never know who is peeking.');
   }
-  displaySeed($('.article'), 'A999TEST999SEED99999999999999999999999999999999999999999999999999999999999999999Z', true);
+  displaySeed($('.article'), '0102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1FFF', true);
   clearProgress();
 
   var logo = new Logo('assets/iota-logo.png', $('canvas.logo')[0]);
@@ -139,7 +138,7 @@ $(document).ready(function () {
     }
   });
 
-  $('button.encrypt-seed').click(function (e) {
+  $('button.encrypt-seed').on('click', function (e) {
     var $button = $(e.target);
     var $article = $button.closest('.article');
     var seed = $article.find('textarea.seed').val();
@@ -161,41 +160,42 @@ $(document).ready(function () {
     $('#statusMessage').text(decrypt ? 'Decrypting...' : 'Encrypting...');
     clearProgress();
     displayModeElements( (decrypt) ? 'decrypt' : 'encrypt' );
-    setTimeout(function () {
+    setTimeout(async function () {
       if (decrypt) {
         if (googleLog && ga) {
           let toughness = seed.substr(seed.indexOf(':'));
           toughness = (toughness[0] == ':') ? toughness.substr(1) : '';
           ga('send', 'event', 'tryte-encrypt', 'decryptSeed', toughness);
         }
-        trypto.decrypt(seed, passphrase, scryptOptions, function (decrypted) {
-          $('#statusMessage').text('');
-          if (decrypted.length == 81) {
-            seedTranformed = decrypted;
-            displaySeed($article, decrypted, true);
-          } else {
-            $('#statusMessage').text('Incorrect passphrase (or encryption options)');
-          }
-          //$('canvas.logo').css('animation-iteration-count', 1);
-          $('canvas.logo').removeClass('spinner')
-          ///logo.spinStop();
-        }, onProgress);
+        $('#statusMessage').text('');
+        try {
+          let decrypted = await trypto.decryptSeed(seed, passphrase);
+          seedTranformed = decrypted;
+          displaySeed($article, decrypted, true);
+        } catch {
+          $('#statusMessage').text('Incorrect passphrase (or encryption options)');
+        }
+        //$('canvas.logo').css('animation-iteration-count', 1);
+        $('canvas.logo').removeClass('spinner')
+        ///logo.spinStop();
+        
       } else {
         if (googleLog && ga) ga('send', 'event', 'tryte-encrypt', 'encryptSeed', 'T' + scryptLevel);
-        trypto.encrypt(seed, passphrase, scryptOptions, function (encrypted) {
-          if (_cachedAddresses[seed]) {
-            address = _cachedAddresses[seed];
-            delete _cachedAddresses[seed];
-            _cachedAddresses[encrypted] = address;
-          }
+        let OVERRIDE_SALT = [1, 2, 3, 4, 5, 6, 7, 8];
+        console.warn('Overrriding random SALT with', OVERRIDE_SALT);
+        let encrypted = await trypto.encryptSeed(seed, passphrase, scryptOptions.toughness, OVERRIDE_SALT);
+        if (_cachedAddresses[seed]) {
+          address = _cachedAddresses[seed];
+          delete _cachedAddresses[seed];
+          _cachedAddresses[encrypted] = address;
+        }
 
-          $('#statusMessage').text('');
-          displaySeed($article, encrypted, true);
-          seedTranformed = encrypted;
-          //$('canvas.logo').css('animation-iteration-count', 1);
-          $('canvas.logo').removeClass('spinner')
-          ///logo.spinStop();
-        }, onProgress);
+        $('#statusMessage').text('');
+        displaySeed($article, encrypted, true);
+        seedTranformed = encrypted;
+        //$('canvas.logo').css('animation-iteration-count', 1);
+        $('canvas.logo').removeClass('spinner')
+        ///logo.spinStop();
       }
       //$('#spinner').removeClass('spinner');
       //$('canvas.logo').removeClass('spinner');
@@ -340,30 +340,29 @@ $(document).ready(function () {
       address = (_cachedAddresses[seed.value]) ? _cachedAddresses[seed.value] : "";
       seedTitle = 'ENCRYPTED';
       seedValue = seed.value;
-    } else {
-      $seedTitle.text('Seed:');
+    } else if (trypto.VALID_ENCODINGS.includes(seed.type)) {
+      $seedTitle.text('Seed: '+seed.type);
       $butEncrypt.text('Encrypt');
       $butEncrypt.data('type', 'ENCRYPT');
-      $butEncrypt.prop('disabled', emptyPassphrase || seed.type != 'PLAIN');
-      if (seed.type == 'PLAIN') {
-        if (_cachedAddresses[seed.value]) {
-          address = _cachedAddresses[seed.value];
-        } else {
-          address = generateAddress(seed.value);
-          _cachedAddresses[seed.value] = address;
-        }
-        $('#statusMessage').text('');
-        seedTitle = 'PRIVATE SEED';
-        seedValue = seed.value;
+      $butEncrypt.prop('disabled', emptyPassphrase);
+      if (_cachedAddresses[seed.value]) {
+        address = _cachedAddresses[seed.value];
       } else {
-        var msg = '';
-        if (seed.illegal.length)
-        msg += seed.value.length + ' characters';
-        if (seed.illegal.character)
-        msg += 'Illegal character';
-        $seedTitle.text('Invalid seed: ' + msg);
-        $('#statusMessage').text('Not a valid IOTA seed')
+        address = generateAddress(seed.value);
+        _cachedAddresses[seed.value] = address;
       }
+      $('#statusMessage').text('');
+      seedTitle = 'PRIVATE SEED';
+      seedValue = seed.value;
+    } else {
+      var msg = '';
+      if (seed.illegal.length)
+      msg += seed.value.length + ' characters';
+      if (seed.illegal.character)
+      msg += 'Illegal character';
+      $seedTitle.text('Invalid seed: ' + msg);
+      $('#statusMessage').text('Not a valid IOTA seed')
+      $butEncrypt.prop('disabled', true);
     }
 
 
@@ -462,16 +461,8 @@ $(document).ready(function () {
 
     if (seed == '')
       state.type = 'EMPTY';
-    else if (! /^[9A-Z]+$/.test(seed))
-      state.illegal.character = true;
-    else if (seed.length == 81)
-      state.type = 'PLAIN';
-    else if (seed.length == 90)
-      state.type = 'ADDRESS';
-    else if (seed.length == 100)
-      state.type = 'ENCRYPTED';
-    else
-      state.illegal.length = true;
+    else 
+      state.type = trypto.guessEncoding(seed);
 
     if (options) {
       state.scrypt = {};
@@ -487,9 +478,10 @@ $(document).ready(function () {
 
   function generateAddress(seed) {
     var address;
-    iota.api.getNewAddress(seed, { total: 1, checksum: true, index: 0 }, (err, addr) => {
-      address = addr[0];
-    });
+    // iota.api.getNewAddress(seed, { total: 1, checksum: true, index: 0 }, (err, addr) => {
+    //   address = addr[0];
+    // });
+    address = 'Needs new IOTA lib to generate address'
     return address;
   }
 
@@ -503,21 +495,12 @@ $(document).ready(function () {
 
 
   function generateSeed() {
-    var seed = randomTryteChar(81);
+    var seed = trypto.generateSeed();
     return seed;
   }
 
-  function randomTryteChar(count) {
-    count = count || 1;
-    let str = "";
-    let values = randomValues(27, 81);
-    for (var i = 0; i < count; i++) {
-      str += IOTACHAR[values[i]];
-    }
-    return str;
-  }
-
-  function randomValues(maxValue, count) {
+  
+  function OBSOLETE_randomValues(maxValue, count) {
     if (maxValue > 256)
       throw new Error('Currently, randomValue() cannot create higher values than 256');
 

@@ -225,6 +225,12 @@ button {
   text-decoration: none;
 }
 
+button:disabled {
+  background-color: #dae9e7;
+  border: 2px solid #b9d1ce;
+  box-shadow: 2px 2px 2px 0px #838f8d;
+}
+
 select {
   border-color: #8cc4be;
   border-width: 3px;
