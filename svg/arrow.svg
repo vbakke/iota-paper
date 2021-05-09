@@ -1,0 +1,15 @@
+<svg 
+    version="1.1" 
+    xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink" 
+    style="width: 100px;height:100px;">
+      <defs>
+        <style type="text/css"><![CDATA[
+          line {
+            stroke: #8dc4be;
+          }
+        ]]></style>
+      </defs>
+      <line x1="20" x2="80" y1="5" y2="50" stroke-width="3" stroke-linecap="round"></line>        
+      <line x1="20" x2="80" y1="95" y2="50" stroke-width="3" stroke-linecap="round"></line>        
+</svg>

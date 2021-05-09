@@ -1,0 +1,27 @@
+{
+  "name": "trypto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify js/main.js -o bundle.js",
+    "watch": "watchify js/main.js -o bundle.js --debug --verbose"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browsify": "0.0.4",
+    "watchify": "^4.0.0"
+  },
+  "dependencies": {
+    "iota.lib.js": "^0.5.3",
+    "jquery": "^3.6.0",
+    "jsqr": "^1.3.1",
+    "mocha": "^8.3.2",
+    "npm": "^7.12.0",
+    "qrcode": "^1.4.4",
+    "tryte-encrypt": "^2.1.3",
+    "trytes": "^1.3.4"
+  }
+}

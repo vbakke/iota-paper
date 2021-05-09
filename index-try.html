@@ -1,0 +1,97 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="bundle.js"></script>
+  <link rel="stylesheet" href="./css/main.css" type="text/css" media="all">
+</head>
+
+<body>
+  <div class="header">
+    <div style="height: 10px"> </div>
+    <h1 class="pagetitle">Secure paper wallets for your IOTA</h1>
+    <div class="pagesubtitle">Encrypt your seed for safekeeping</div>
+  </div>
+  <div class="content">
+    <div class="article">
+      <div class="wallets">
+        <div class="wallet-info">
+          <div class="title">Wallet</div>
+          <div class="hflex space">
+            <div class="vflex">
+              <div class="hflex space">
+                <div class="seedTitle">Seed:</div>
+                <div class="hflex">
+                  <button class="scan-seed">Scan QR</button>
+                  <button class="generate-seed">Random seed</button>
+                </div>
+              </div>
+              <textarea class="input seed" type="text" cols="51" rows="3" value=""></textarea>
+            </div>
+            <div class="vflex">
+              <div class="hflex">
+                <select class="scrypt-T">
+                  <option value="0">Standard</option>
+                  <option value="1">Toughness +1</option>
+                  <option value="2">Toughness +2</option>
+                  <option value="3">Toughness +3</option>
+                  <option value="4">Toughness +4</option>
+                </select>
+                <button class="encrypt-seed">Encrypt</button>
+              </div>
+              <textarea class="passphrase" autocomplete="off" rows="3">Ƥāssφräsę</textarea>
+            </div>
+          </div>
+        </div>
+        <div id="statusMessage"></div>
+        <div class="wallet hflex space">
+          <canvas class="qr address-qr" width="160px" height="160px"></canvas>
+          <canvas class="address-text" width="250px" height="290px" style="width:125px;height:145px"></canvas>
+          <canvas class="logo" width="100px" height="100px"></canvas>
+          <canvas class="seed-text" width="250px" height="290px" style="width:125px;height:145px"></canvas>
+          <canvas class="qr seed-qr" width="160px" height="160px"></canvas>
+        </div>
+        <div id="warning"></div>
+        <div id="story">
+          <h2>vbakke/tryte-encrypt</h2>
+          <p>This page shows the
+            <a href="https://github.com/vbakke/tryte-encrypt">vbakke/tryte-encrypt</a> for encrypting an IOTA seed with a passphrase.</p>
+          <p>Paper wallets are not safe if anyone gets hold of the piece of paper, or gets a snapshot of your screen.</p>
+        </div>
+      </div>
+      <div id="progress" class="progress">
+        <div class="title">Algorithm</div>
+        <div class="advanced-steps">
+          <div class="stage gridSeed" id="stageS0">
+            <span class="step-title">Seed:</span>
+            <span class="length">(81 chars)</span>
+            <br/>
+            <div class="value">9A9TEST9SEED9</div>
+          </div>
+          <div class="stage gridPassphrase" id="stageP0">
+            <span class="step-title">Passphrase:</span>
+            <span class="length">(nn chars)</span>
+            <br/>
+            <span class="value">
+              <span></span>
+          </div>
+
+          <div class="arrow gridSeed">⇩</div>
+          <div class="arrow gridPassphrase">⇩</div>
+
+          <div class="step gridSeed" id="stepS1">
+            <span>STEP S1: encode Trytes As Bytes*</span>
+            <span class="timing">ms</span>
+          </div>
+          <div class="step gridPassphrase" id="stepP1">
+            <span>STEP P1: 2xSHA256</span>
+            <span class="timing">ms</span>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>

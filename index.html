@@ -1,0 +1,231 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="bundle.js"></script>
+  <link rel="stylesheet" href="./css/main.css" type="text/css" media="all">
+</head>
+
+<body>
+  <div class="header">
+    <div style="height: 10px"> </div>
+    <h1 class="pagetitle">Secure paper wallets for your IOTA</h1>
+    <div class="pagesubtitle">Encrypt your seed for safekeeping</div>
+  </div>
+  <div class="content">
+    <div class="article">
+      <div class="wallets">
+        <div class="wallet-info">
+          <div class="title">Wallet</div>
+          <div class="hflex space">
+            <div class="vflex">
+              <div class="hflex space">
+                <div class="seedTitle">Seed:</div>
+                <div class="hflex">
+                  <button class="scan-seed">Scan QR</button>
+                  <button class="generate-seed">Random seed</button>
+                </div>
+              </div>
+              <textarea class="input seed" type="text" rows="3" value=""></textarea>
+            </div>
+            <div class="vflex">
+              <div class="hflex">
+                <select class="scrypt-T">
+                  <option value="0">Standard</option>
+                  <option value="1">Toughness +1</option>
+                  <option value="2">Toughness +2</option>
+                  <option value="3">Toughness +3</option>
+                  <option value="4">Toughness +4</option>
+                </select>
+                <button class="encrypt-seed">Encrypt</button>
+                <button class="show-algorithm" alt="Show algorithm">Algorithm</button>
+              </div>
+              <textarea class="passphrase" autocomplete="off" rows="3">Ƥāssφräsę</textarea>
+            </div>
+          </div>
+        </div>
+        <div id="statusMessage"></div>
+        <div class="wallet hflex space">
+          <canvas class="qr address-qr" width="160px" height="160px"></canvas>
+          <canvas class="address-text" width="250px" height="290px" style="width:125px;height:145px"></canvas>
+          <canvas class="logo" width="100px" height="100px"></canvas>
+          <canvas class="seed-text" width="255px" height="290px" style="width:125px;height:145px"></canvas>
+          <canvas class="qr seed-qr" width="160px" height="160px"></canvas>
+        </div>
+        <div id="tangleExplorer"></div>
+        <div id="warning"></div>
+        <div id="story">
+          <h2>Why bother...?</h2>
+          <p><i>Encrypted</i> paper* wallets solve a number of security issues; such as someone finding your piece of paper, 
+            or unauthorized snapshot of your screen, clipboard, print spooler or printer memory, etc.
+          </p>
+          <p>
+            <i>
+              (* Using an extended interpretation of the word ‘paper’, here. : )
+            </i>
+          </p>
+          <p>
+            The project <a href="https://github.com/vbakke/tryte-encrypt/">vbakke/tryte-encrypt</a> is a draft and a discussion 
+            point for something that I hope will end up in an approved standard, because I believe most of today's IOTA software
+            are missing this feature.
+          </p>
+          <p>
+            Press <img src="assets/cogs.png" height="18px"> to see the details of the steps of the algorithm. It is loosly based on BIP38.
+          </p>
+
+
+
+          <h2>Toughness</h2>
+          <p>
+            The hash functions like SHA, are made to be fast. But bcrypt/scrypt are deliberately slow and resource intensive.
+          </p>
+          <p>
+            Both bcrypt and scrypt have arguments that controll how intensive the has is. Scrypt has three arguments.
+          </p>
+          <p>
+            I have decided on a baseline level, to be the same as for BIP38 (that is, scrypt logN=14, r=8, p=8). 
+            All three can be set independantly, but to simplify it, I have chosen one parameter that increases all 
+            three with the same amount. (Up for discussion.)
+          </p>
+          <h2>Scanning QR codes</h2>
+          <p>
+            Both plain and encrypted QR codes can be scanned. Encrypted codes must be decrypted before an IOTA address can
+            be generated.
+          </p>
+          <p>
+            When decrypting, the scrypt parameters must be exactly the same as when encrypting the seed. 
+          </p>
+          <p>
+            To avoid lost funds due to forgetting the parameters, the parameters are included in the encrypted seed. 
+            The delimiter chosen is colon (:), as it is not a valid tryte character, but still considered an "alphanumeric"
+            character for QR codes, and keeping the compact version of the QR.
+          </p>
+        </div>
+      </div>
+      <div id="progress" class="progress" style="display: none">
+        <div class="title">Algorithm</div>
+        <div class="algorithm">
+          <div>
+            <p>
+              This is showing the different steps of the encryption algorithm.
+            </p>
+            <p>
+              Please use
+              <a href="https://github.com/vbakke/tryte-encrypt/issues">vbakke/tryte-encrypt issues</a>
+              to discuss pros and cons with the algorithm, such as SHA256 vs SHA3, kerl or not kerl, is that a question?, modes of AES encryption, scrypt’s arguments, etc.
+            </p>
+          </div>
+          <div class="advanced-steps">
+            <div class="stage gridSeed" id="stageS0">
+              <span class="step-title mode-element" data-mode="encrypt">Seed:</span>
+              <span class="step-title mode-element" data-mode="decrypt">Encrypted seed:</span>
+              <span class="length">(81 chars)</span>
+              <br/>
+              <div class="value">9A9TEST9SEED9</div>
+            </div>
+            <div class="stage gridPassphrase" id="stageP0">
+              <span class="step-title">Passphrase:</span>
+              <span class="length">(nn chars)</span>
+              <br/>
+              <span class="value">
+                <span></span>
+            </div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="arrow gridPassphrase">⇩</div>
+
+            <div class="step gridSeed" id="stepS1">
+              <span class="mode-element" data-mode="encrypt"> Step S1: Encode Trytes As Bytes</span>
+              <span class="mode-element" data-mode="decrypt"> Step S1: Decode Bytes from Trytes</span>
+              <span class="timing">ms</span>
+              <br/>
+              <span class="mode-element explanation" data-mode="encrypt">Shift tryte3 (0-26) to tryte5 (0-242) using vbakke/trytes.</span>
+              <span class="mode-element explanation" data-mode="decrypt">Decode bytes (0-255) to tryte6 (0-727), as asciiToTrytes.js.</span>
+            </div>
+            <div class="step gridPassphrase" id="stepP1">
+              <span>Step P1: 2x SHA256</span>
+              <span class="timing">ms</span>
+              <br/>
+              <span class="explanation">Double hashing the passphrase with SHA.</span>
+            </div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="arrow gridPassphrase">⇩</div>
+
+            <div class="stage gridSeed" id="stageS1">
+              <span class="step-title">Seed bytes:</span>
+              <span class="length">(81 bytes)</span>
+              <br/>
+              <div class="value">[128, 252, 0...]</div>
+            </div>
+            <div class="stage gridPassphrase" id="stageP1">
+              <span class="step-title">Hashed passphrase:</span>
+              <span class="length">(xx bytes)</span>
+              <br/>
+              <div class="value"></div>
+            </div>
+
+            <div class="arrow gridPassphrase">⇩</div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="step gridPassphrase" id="stepP2">
+              <span>Step P2: Scrypt hashing</span>
+              <span class="timing">ms</span>
+              <br/>
+              <span class="explanation"></span>
+            </div>
+
+            <div class="arrow gridPassphrase">⇩</div>
+
+            <div class="step gridSeed" id="stepS2">
+              <span class="mode-element" data-mode="encrypt"> Step S2: AES encrypt</span>
+              <span class="mode-element" data-mode="decrypt"> Step S2: AES decrypt</span>
+              <span class="timing">ms</span>
+              <br/>
+              <span class="mode-element explanation" data-mode="encrypt">Using CTR mode</span>
+              <span class="mode-element explanation" data-mode="decrypt">Using CTR mode</span>
+            </div>
+            <div class="arrow gridMiddle">⇦</div>
+            <div class="stage gridPassphrase" id="stageP2">
+              <span class="step-title">Encryption key:</span>
+              <span class="length">(32 bytes, 256 bit)</span>
+              <br/>
+              <div class="value"></div>
+            </div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="stage gridSeed" id="stageS2">
+              <span class="step-title mode-element" data-mode="encrypt">Encrypted seed bytes:</span>
+              <span class="step-title mode-element" data-mode="decrypt">Decrypted seed bytes:</span>
+              <span class="length">(50 bytes)</span>
+              <br/>
+              <div class="value"></div>
+            </div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="step gridSeed" id="stepS3">
+              <span class="mode-element" data-mode="encrypt">Step S3: Encode Bytes as Trytes</span>
+              <span class="mode-element" data-mode="decrypt">Step S3: Decode Trytes from Bytes</span>
+              <span class="timing">ms</span>
+              <br/>
+              <span class="mode-element explanation" data-mode="encrypt">Encode bytes (0-255) in tryte6 (0-727), as asciiToTrytes.js.</span>
+              <span class="mode-element explanation" data-mode="decrypt">Shift tryte5 (0-242) to tryte3 (0-26) using vbakke/trytes.</span>
+            </div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="stage gridSeed" id="stageS3">
+              <span class="step-title mode-element" data-mode="encrypt">Encrypted seed:</span>
+              <span class="step-title mode-element" data-mode="decrypt">Decrypted seed:</span>
+              <span class="length">(100 bytes)</span>
+              <br/>
+              <div class="value"></div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,266 @@
+body {
+  background-color: #f8fffe;
+  font-family: "Tahoma", Arial, Helvetica, sans-serif;
+  margin: 0px;
+  padding: 0px;
+}
+
+* {
+  font-size: 16px;
+  color: #30968e;
+}
+
+.vflex {
+  display: flex;
+  flex-direction: column;
+}
+
+.hflex {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.hflex.space {
+  justify-content: space-between;
+}
+
+
+.header {
+  background-color: #50a098;
+  height: 70px;
+}
+
+.header h1 {
+  color: #146b64;
+}
+.pagetitle {
+  top: 20px;
+  font-size: x-large;
+  font-weight: bold;
+  text-align: center;
+}
+.pagesubtitle {
+  font-size: small;
+  font-weight: bold;
+  text-align: center;
+}
+
+.content {
+  /* background-color: cyan; * /
+  max-width: 900px;*/
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.article {
+  padding-top: 25px;
+  display: grid;
+  grid-template-columns: 800px auto;
+  justify-content: center;
+}
+
+.title {
+  padding-top: 25px;
+  padding-bottom: 15px;
+  font-size: large;
+  font-weight: bold;
+  text-align: center;
+}
+
+.wallets {
+  min-width: 770px;
+  max-width: 770px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.wallet {
+  border: solid 2px #04a997;
+  margin-top: 5px; 
+  min-width: 700px;
+  max-width: 760px;
+}
+
+.walletInner {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.progress {
+  max-width: 844px;
+  margin-left: 40px;
+}
+
+.progress.hidden {
+  display: none;
+}
+
+.algorithm {
+  padding: 10px 20px;
+  border: solid 2px #04a996;
+  border-radius: 20px;
+  background: #d3f3ef;
+}
+.algorithm p {
+  color: #146b64;
+}
+
+.advanced-steps {
+  padding-top: 10px;
+  display: grid;
+  grid-template-columns: [gridSeed] 380px [gridMiddle] 40px [gridPassphrase] 380px;
+  grid-template-rows: 94px 30px 50px 30px 123px 30px 50px 30px 94px 30px 123px;
+}
+
+.advanced-steps .step {
+  justify-self: center;
+  align-self: center;
+  background-color: #8ccfc7;
+  border: solid 1.5px #04a996;
+  border-radius: 10px;
+  padding: 10px 10px;
+  height: 40px;
+}
+
+.advanced-steps .step span {
+  color: #146b64;
+}
+
+.advanced-steps .stage {
+  background-color: #edf5f4;
+  overflow-wrap: break-word;
+  border: solid 1px #8cc4be;
+  padding: 5px 8px;
+}
+.advanced-steps .step-title {
+  padding-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.advanced-steps .length {
+  font-size: 14px;
+}
+.advanced-steps .value {
+  display: block;
+  font-size: 14px;
+  padding-top: 6px;
+}
+.advanced-steps .timing {
+  font-style: italic;
+  font-size: 12px;
+  margin-left: 12px;
+}
+.advanced-steps .explanation {
+  display: block;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.advanced-steps .arrow {
+  align-self: center;
+  justify-self: center;
+  font-size: 23px;
+}
+
+.advanced-steps .gridSeed {
+  grid-column-start: gridSeed;
+}
+.advanced-steps .gridPassphrase {
+  grid-column-start: gridPassphrase;
+}
+
+.qr {
+  margin-top: 2px;
+}
+
+.logo {
+  margin-bottom: 37px;
+}
+
+#statusMessage {
+  height: 20px;
+  margin-top: 5px;
+}
+
+.warning {
+  margin-top: 20px;
+  font-size: 20px;
+  border: solid 2px;
+  padding-left: 10px;
+  padding-bottom: 3px;
+  background-color: #8ccfc7;
+  color: #146b64;
+}
+
+#story {
+  padding-top: 20px;
+}
+
+/* button.show-algorithm {
+  padding: 5px;
+} */
+
+.input.seed {
+  width: 400px;
+}
+
+button {
+  -moz-box-shadow: 2px 2px 2px 0px #014a41;
+  -webkit-box-shadow: 2px 2px 2px 0px #014a41;
+  box-shadow: 2px 2px 2px 0px #014a41;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a4f2e9', endColorstr='#8ccfc7',GradientType=0);
+  background-color: #8ccfc7;
+  -moz-border-radius: 11px;
+  -webkit-border-radius: 11px;
+  border-radius: 4px;
+  border: 2px solid #04a996;
+  display: inline-block;
+  cursor: pointer;
+  color: #146b64;
+  font-weight: bold;
+  padding: 10px 16px 8px;
+  margin: 5px;
+  text-decoration: none;
+}
+
+select {
+  border-color: #8cc4be;
+  border-width: 3px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  padding: 3px 7px;
+}
+
+select[disabled='disabled'] {
+  background-color: #edf5f4;
+  color: #a1bbb9;
+}
+
+textarea {
+  border-color: #8cc4be;
+  border-width: 3px;
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-weight: bold;
+}
+
+h2 {
+  padding-top: 20px;
+}
+
+svg  {
+  stroke: #8cc4be;
+}
+
+.spinner {
+  animation: spin 2s linear infinite;
+  transition-timing-function: ease-in-out;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

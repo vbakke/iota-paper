@@ -1,0 +1,189 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" /></script>
+  <script src="encryptStr.js"></script>
+  <link rel="stylesheet" href="./css/main.css" type="text/css" media="all">
+</head>
+
+<body>
+  <script>
+    $(document).ready(function() {
+      setTimeout(function () {
+        $('textarea.seed').val('Hei');
+      }, 100);
+    });
+  </script>
+  <div class="header">
+    <div style="height: 10px"> </div>
+    <h1 class="pagetitle">Encrypt your text</h1>
+    <div class="pagesubtitle">and back again</div>
+  </div>
+  <div class="content">
+    <div class="article">
+      <div class="wallets" style="width:1024px">
+        <div class="wallet-info">
+          <div class="title">Text</div>
+          <div class="hflex space">
+            <div class="vflex" style="width:49%">
+              <div class="hflex space">
+                <div class="seedTitle">Plain text:</div>
+              </div>
+              <textarea class="input plain" type="text" rows="18" value=""></textarea>
+            </div>
+            <div class="vflex">
+              <div class="hflex">
+                <select class="scrypt-T">
+                  <option value="0">Standard</option>
+                  <option value="1">Toughness +1</option>
+                  <option value="2">Toughness +2</option>
+                  <option value="3">Toughness +3</option>
+                  <option value="4">Toughness +4</option>
+                </select>
+                <button class="encrypt">Encrypt</button>
+                <button class="decrypt">Decrypt</button>
+              </div>
+              <textarea class="passphrase" autocomplete="off" rows="3">Ƥāssφräsę</textarea>
+            </div>
+          </div>
+        </div>
+        <div id="statusMessage"></div>
+        <div class="wallet hflex space">
+            <textarea class="input encrypted" type="text" rows="15" value="" style="width:100%"></textarea>
+        </div>
+        <div id="warning"></div>
+        <div id="story">
+          <h2>Toughness</h2>
+          <p>            
+            Toughness increases all scrypt options by one
+          </p>
+        </div>
+      </div>
+      <div id="progress" class="progress" style="display: none">
+        <div class="title">Algorithm</div>
+        <div class="algorithm">
+          <div>
+            <p>
+              This is showing the different steps of the encryption algorithm.
+            </p>
+            <p>
+              Please use
+              <a href="https://github.com/vbakke/tryte-encrypt/issues">vbakke/tryte-encrypt issues</a>
+              to discuss pros and cons with the algorithm, such as SHA256 vs SHA3, kerl or not kerl, is that a question?, modes of AES encryption, scrypt’s arguments, etc.
+            </p>
+          </div>
+          <div class="advanced-steps">
+            <div class="stage gridSeed" id="stageS0">
+              <span class="step-title mode-element" data-mode="encrypt">Seed:</span>
+              <span class="step-title mode-element" data-mode="decrypt">Encrypted seed:</span>
+              <span class="length">(81 chars)</span>
+              <br/>
+              <div class="value">9A9TEST9SEED9</div>
+            </div>
+            <div class="stage gridPassphrase" id="stageP0">
+              <span class="step-title">Passphrase:</span>
+              <span class="length">(nn chars)</span>
+              <br/>
+              <span class="value">
+                <span></span>
+            </div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="arrow gridPassphrase">⇩</div>
+
+            <div class="step gridSeed" id="stepS1">
+              <span class="mode-element" data-mode="encrypt"> Step S1: Encode Trytes As Bytes</span>
+              <span class="mode-element" data-mode="decrypt"> Step S1: Decode Bytes from Trytes</span>
+              <span class="timing">ms</span>
+              <br/>
+              <span class="mode-element explanation" data-mode="encrypt">Shift tryte3 (0-26) to tryte5 (0-242) using vbakke/trytes.</span>
+              <span class="mode-element explanation" data-mode="decrypt">Decode bytes (0-255) to tryte6 (0-727), as asciiToTrytes.js.</span>
+            </div>
+            <div class="step gridPassphrase" id="stepP1">
+              <span>Step P1: 2x SHA256</span>
+              <span class="timing">ms</span>
+              <br/>
+              <span class="explanation">Double hashing the passphrase with SHA.</span>
+            </div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="arrow gridPassphrase">⇩</div>
+
+            <div class="stage gridSeed" id="stageS1">
+              <span class="step-title">Seed bytes:</span>
+              <span class="length">(81 bytes)</span>
+              <br/>
+              <div class="value">[128, 252, 0...]</div>
+            </div>
+            <div class="stage gridPassphrase" id="stageP1">
+              <span class="step-title">Hashed passphrase:</span>
+              <span class="length">(xx bytes)</span>
+              <br/>
+              <div class="value"></div>
+            </div>
+
+            <div class="arrow gridPassphrase">⇩</div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="step gridPassphrase" id="stepP2">
+              <span>Step P2: Scrypt hashing</span>
+              <span class="timing">ms</span>
+              <br/>
+              <span class="explanation"></span>
+            </div>
+
+            <div class="arrow gridPassphrase">⇩</div>
+
+            <div class="step gridSeed" id="stepS2">
+              <span class="mode-element" data-mode="encrypt"> Step S2: AES encrypt</span>
+              <span class="mode-element" data-mode="decrypt"> Step S2: AES decrypt</span>
+              <span class="timing">ms</span>
+              <br/>
+              <span class="mode-element explanation" data-mode="encrypt">Using CTR mode</span>
+              <span class="mode-element explanation" data-mode="decrypt">Using CTR mode</span>
+            </div>
+            <div class="arrow gridMiddle">⇦</div>
+            <div class="stage gridPassphrase" id="stageP2">
+              <span class="step-title">Encryption key:</span>
+              <span class="length">(32 bytes, 256 bit)</span>
+              <br/>
+              <div class="value"></div>
+            </div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="stage gridSeed" id="stageS2">
+              <span class="step-title mode-element" data-mode="encrypt">Encrypted seed bytes:</span>
+              <span class="step-title mode-element" data-mode="decrypt">Decrypted seed bytes:</span>
+              <span class="length">(50 bytes)</span>
+              <br/>
+              <div class="value"></div>
+            </div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="step gridSeed" id="stepS3">
+              <span class="mode-element" data-mode="encrypt">Step S3: Encode Bytes as Trytes</span>
+              <span class="mode-element" data-mode="decrypt">Step S3: Decode Trytes from Bytes</span>
+              <span class="timing">ms</span>
+              <br/>
+              <span class="mode-element explanation" data-mode="encrypt">Encode bytes (0-255) in tryte6 (0-727), as asciiToTrytes.js.</span>
+              <span class="mode-element explanation" data-mode="decrypt">Shift tryte5 (0-242) to tryte3 (0-26) using vbakke/trytes.</span>
+            </div>
+
+            <div class="arrow gridSeed">⇩</div>
+            <div class="stage gridSeed" id="stageS3">
+              <span class="step-title mode-element" data-mode="encrypt">Encrypted seed:</span>
+              <span class="step-title mode-element" data-mode="decrypt">Decrypted seed:</span>
+              <span class="length">(100 bytes)</span>
+              <br/>
+              <div class="value"></div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>
