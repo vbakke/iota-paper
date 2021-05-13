@@ -2,23 +2,26 @@ var $ = require('jquery');
 var trypto = require('../del_lib/iota-paper-encryption');
 var qrcode = require('qrcode');
 var jsQR = require('jsqr');
-//var IOTA = require('iota.lib.js');
 var Logo = require('./logo.js');
+const iota = require('./iota.js');
+const { decodeSeedToBytes, encodeByteSeed } = require('../del_lib/iota-paper-encryption');
 
-//const iota = new IOTA({});
-//const IOTACHAR = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const tangleUrl = 'https://thetangle.org/address/';
 
-//var seed = 'A999TEST999SEED99999999999999999999999999999999999999999999999999999999999999999Z';
+
+
+
+const tangleUrl = 'https://explorer.iota.org/mainnet/addr/';
+
+var initalSeed = 'BAD0005EED000102030405060708090A0B0C0D0E0F10111213141516171819FF';
 const _cachedAddresses = {};
 let googleLog = false;
 
-$(document).ready(function () {
+$(function () {
   if (googleLog) {
     $('#warning').addClass('warning').html('&#9888; Do not scan or enter actual seeds unless you are offline in a safe environment! &#9888;'
       + '<br/> You never know who is peeking.');
   }
-  displaySeed($('.article'), '0102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1FFF', true);
+  displaySeed($('.article'), initalSeed, true);
   clearProgress();
 
   var logo = new Logo('assets/iota-logo.png', $('canvas.logo')[0]);
@@ -348,7 +351,7 @@ $(document).ready(function () {
       if (_cachedAddresses[seed.value]) {
         address = _cachedAddresses[seed.value];
       } else {
-        address = generateAddress(seed.value);
+        address = generateAddress(seed);
         _cachedAddresses[seed.value] = address;
       }
       $('#statusMessage').text('');
@@ -369,7 +372,7 @@ $(document).ready(function () {
     // Draw Address
     drawQr($(e).find('canvas.address-qr'), address, 'L');
     drawText($(e).find('canvas.address-text'), addressTitle, address, 7);
-    $('#tangleExplorer').html('Explore the address at <a href="'+tangleUrl+address+'">thetangle.org</a>.');
+    $('#tangleExplorer').html('Explore the address at <a target="_blank" href="'+tangleUrl+address+'">https://explorer.iota.org/</a>.');
 
     // Draw Seed
     drawQr($(e).find('canvas.seed-qr'), seedValue, 'L');
@@ -477,15 +480,16 @@ $(document).ready(function () {
   }
 
   function generateAddress(seed) {
-    var address;
-    // iota.api.getNewAddress(seed, { total: 1, checksum: true, index: 0 }, (err, addr) => {
-    //   address = addr[0];
-    // });
-    address = 'Needs new IOTA lib to generate address'
-    return address;
+    // Normalize all seeds (also bip39, to ensure one space delimiter etc)
+    let byteSeed = decodeSeedToBytes(seed.value);
+    let bip39Seed = encodeByteSeed(byteSeed, 'bip39');
+    
+
+    var addresses = iota.generateAddresses(bip39Seed);
+    return addresses[0];
   }
 
-  function addChecksum(address) {
+  function OBSOLETE_addChecksum(address) {
     try {
       return iota.utils.addChecksum(address);
     } catch (err) {

@@ -26,7 +26,7 @@
                   <button class="generate-seed">Random seed</button>
                 </div>
               </div>
-              <textarea class="input seed" type="text" rows="3" value=""></textarea>
+              <textarea class="input seed" type="text" rows="5" value=""></textarea>
             </div>
             <div class="vflex">
               <div class="hflex">
@@ -40,7 +40,7 @@
                 <button class="encrypt-seed">Encrypt</button>
                 <button class="show-algorithm" alt="Show algorithm">Algorithm</button>
               </div>
-              <textarea class="passphrase" autocomplete="off" rows="3">Ƥāssφräsę</textarea>
+              <textarea class="passphrase" autocomplete="off" rows="5" type="password">Ƥāssφräsę</textarea>
             </div>
           </div>
         </div>
@@ -48,7 +48,10 @@
         <div class="wallet hflex space">
           <canvas class="qr address-qr" width="160px" height="160px"></canvas>
           <canvas class="address-text" width="250px" height="290px" style="width:125px;height:145px"></canvas>
-          <canvas class="logo" width="100px" height="100px"></canvas>
+          <div>
+            <canvas class="logo" width="100px" height="100px"></canvas>
+            <img src="./assets/iota-chrysalis.png" width="100px" height="75px">
+          </div>  
           <canvas class="seed-text" width="255px" height="290px" style="width:125px;height:145px"></canvas>
           <canvas class="qr seed-qr" width="160px" height="160px"></canvas>
         </div>

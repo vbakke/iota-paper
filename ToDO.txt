@@ -1,66 +1,13 @@
 ToDo
 ====
-Main Features
-X Display address and (encrypted) seed
-  x Seed, with caption
-  x Dummy address, with caption
-  x Only update seed QR for valid seeds
+ - Remove 'Private seed' as QR. Print bip39 insetad
+ - Update Algorithm pane
+ - New Layout ()
+ - Make printable 
+ - Blur passphrase color: transparent;text-shadow: 0 0 9px rgba(0,0,0,0.7);
 
-X Encrypt seed
-  x Update seed
-  x Decrypt QR
-  x Keep Address, after encryption
-  x Logo-spinner
-  x Change dropdown to 'toughness' 
-  x Keyup in seed causes computational sideeffects, generating address
-  x Message when decrypt fails
-  x Update dropdown, based on input, allow P1
-  x 'Seed' (green) | 'Encrypted seed' (green) | 'Seed (invalid length|characters|enryption options)'
-    
-= Scan and decode seed
-  x Scan a QR code
-  x Fix loading messages
-  x Clear address, when scanning QR
-  x Extract scrypt options when scan/type
-  x Extract scrypt options (in tryte/encrypt)
-  x Generate scrypt options (in tryte/encrypt)
-  x Scan Address, and display it
-  x Ignore decrypted Seeds not 81 chars
-
-X Generate IOTA address 
- x Generate address
- x Test randomness of seeds
-
-X Generate secure seed
- x Generate random seed
- x Generate secure random, using crypt
-
-X Show algorithm
- x Display steps
- x Update as progress goes along
-
-= Multiple seeds
-
-= Print
- - Increase dpi
- - Make printable
- - Make multiple articles
-
-Nice features
-! Fix infinite rotation on iPad
-! Fix Cancel scan message
-! Fix Cancel button (too quick)
-! Fix font on iPad
-! Fix textarea size on iPad
-x Move buttons above, use flexboxes
-- Enhance line break 
-  - Based on width
-x IOTA logo
-x Seed length count
-- Cool seed generation effect
-- Spinner based on onProgress, https://jsfiddle.net/u7un9amq/1/ and 
-- Passphrase using a show/hide password
-- Automatically encrypt, if passphrase exists
-- You are ONLINE / OFFLINE
-- Nice "bank note" layout
-- displaySeed(seed) => drawIotaNote(seed, address)
+ Done 
+ ====
+ - Link to https://explorer.iota.org/mainnet/addr/ target=_blank
+ - Generate IOTA 1.5 addresse
+ - Incorporate new iota-paper-encryption.js
