@@ -1,13 +1,28 @@
 ToDo
 ====
- - Remove 'Private seed' as QR. Print bip39 insetad
+ 
+ - Make extra templates for wallets
+ - Parameterize walletsize, QR and text positions 
+ - Consolidate common functionality across drawXxx functions
+ 
  - Update Algorithm pane
  - New Layout ()
- - Make printable 
- - Blur passphrase color: transparent;text-shadow: 0 0 9px rgba(0,0,0,0.7);
+
+
+- Add balance of address
+
 
  Done 
  ====
+ - Blur passphrase color: transparent;text-shadow: 0 0 9px rgba(0,0,0,0.7);
+ - Make printable 
+ - Put seed and QR on same Canvas
+ - Add 'Public Address' above QR
+ - Break address and seed into 2 lines
+ - Update drawMultiline() to print on big canvas
+ - Hide Iota icon when QR is shown (Encrypted)
+
+ - Add chrysalis img to canvas
  - Link to https://explorer.iota.org/mainnet/addr/ target=_blank
  - Generate IOTA 1.5 addresse
  - Incorporate new iota-paper-encryption.js
