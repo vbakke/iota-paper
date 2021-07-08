@@ -31,7 +31,10 @@ const wallets = {
 const tangleUrl = 'https://explorer.iota.org/mainnet/addr/';
 
 //var initalSeed = 'BAD0005EED000102030405060708090A0B0C0D0E0F10111213141516171819FF';
-const _cachedAddresses = { '07Y5F5PDJ3MDE3WZQ0F9F17SDWTV986RFN9K5FVAED0W7E8VGSN7C0820C20A1G713WDQNHX': 'iota1qplh5m5tw4cy0rd2ys8qtjcgz9zfg7lw54590ksw7wjhgkyl07mcjtdpcsw' };
+// const _cachedAddresses = { '07Y5F5PDJ3MDE3WZQ0F9F17SDWTV986RFN9K5FVAED0W7E8VGSN7C0820C20A1G713WDQNHX': 'iota1qplh5m5tw4cy0rd2ys8qtjcgz9zfg7lw54590ksw7wjhgkyl07mcjtdpcsw' };
+// const _cachedAddresses = { '07SSXYHZDTBVZQM5GZNBPGCT0FPH2JHM3KG6AEXHG82FB5DASTS19RMZYQXTKRF34HW8FJJ1': 'iota1qr54g94z8tqayhg6xr6q5w556ham22c6ealzd4kelmr5jjyejsfryecuwq9' };  // abuse
+const _cachedAddresses = { '04NCP9RGJ1TFAJC522T9S7EA05WHEK7FQW4MV9HPC49KDX8A2Z96PV6SPHY1FJ0R3DFZ3A18': 'iota1qr6mx6fmzjwgpq8k9s7x06e6duxp6kpdqp5gjzyc3z6af5a5gcse7jcvymm' };  // cool burger
+
 var initalSeed = Object.keys(_cachedAddresses)[0];
 let googleLog = false;
 
@@ -117,8 +120,8 @@ $(function () {
                     //outputContainer.hidden = false;
                     // canvas.height = video.videoHeight;
                     // canvas.width = video.videoWidth;
-                    canvas.height = 160;
-                    canvas.width = 160;
+                    canvas.height = 120;
+                    canvas.width = 120;
                     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
                     var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -197,10 +200,10 @@ $(function () {
         }
 
 
-        var scryptLevel = parseInt($article.find('select.scrypt-T').val());
-        var scryptOptions = { toughness: scryptLevel, interruptStep: 3000 };
+        var toughness = parseInt($article.find('select.scrypt-T').val());
+        var hashoptions = { toughness: toughness, interruptStep: 3000 };
 
-        drawQr($('.wallet-canvas'), '', 'L', { x: -1, y: 60 });
+        drawQr($('.wallet-canvas'), '', 'L', { x: -1, y: 63 });
         $('.logo').removeClass('hidden');
         $('canvas.logo').removeClass('spinner');
         $('canvas.logo').addClass('spinner');
@@ -223,15 +226,15 @@ $(function () {
                     seedTranformed = decrypted;
                     displaySeed($article, decrypted, true);
                 } catch {
-                    $('#statusMessage').text('Incorrect passphrase (or encryption options)');
+                    $('#statusMessage').text('Incorrect passphrase');
                 }
                 $('canvas.logo').removeClass('spinner')
 
             } else {
-                if (googleLog && ga) ga('send', 'event', 'tryte-encrypt', 'encryptSeed', 'T' + scryptLevel);
+                if (googleLog && ga) ga('send', 'event', 'tryte-encrypt', 'encryptSeed', 'T' + toughness);
                 let OVERRIDE_SALT = undefined; //[1, 2, 3, 4, 5, 6, 7, 8];
-                if (OVERRIDE_SALT) console.warn('Overrriding random SALT with', OVERRIDE_SALT);
-                let encrypted = await vault.encryptSeed(seed, passphrase, scryptOptions.toughness, OVERRIDE_SALT);
+                if (OVERRIDE_SALT) console.warn('DEBUG: Overrriding random SALT with', OVERRIDE_SALT);
+                let encrypted = await vault.encryptSeed(seed, passphrase, hashoptions.toughness, OVERRIDE_SALT);
                 if (_cachedAddresses[seed]) {
                     address = _cachedAddresses[seed];
                     delete _cachedAddresses[seed];
@@ -341,21 +344,20 @@ $(function () {
     function displayWallet(e, seed) {
 
         let $select = $(e).find('.scrypt-T');
-        if (seed.type == 'ADDRESS') {
-            $select.children(':first').text('Standard');
-            $select.attr('disabled', 'disabled');
-        } else if (seed.value.indexOf(':') > -1) {
-            let opts = seed.value.split(':')[1];
-            if (opts[0] == 'T' && $select.children("[value='" + opts.substr(1) + "']").length) {
-                $select.val(opts[1]);
+        // if (seed.type == 'ADDRESS' || seed.type == 'bip39') {
+            // $select.val("0");
+            // $select.removeAttr('disabled');
+        // } else 
+        if (seed.type == 'ENCRYPTED') {
+            let opts = seed.value.split(':')[1] || '0';
+            if (opts[0] == 'T') opts = opts.slice(1);
+            if ($select.children("[value='" + opts + "']").length) {
+                $select.val(opts);
             } else {
-                $select.children(':first').text(opts);
-                $select.val('0');
+                $select.children(':first').val(opts).text(opts);
             }
-            $select.attr('disabled', 'disabled');
         } else {
-            $select.children(':first').text('Standard');
-            $select.removeAttr('disabled');
+            $select.val("0");
         }
 
 
@@ -416,14 +418,16 @@ $(function () {
         var context = canvas.getContext("2d");
         context.clearRect(0, 0, canvas.width, canvas.height);
         drawBackground($('.wallet'), layout);
-        drawQr($wallet, address, 'L', { x: 1, y: 60 });
-        drawMultilineText($wallet, 'Address: ', address, 2, { x: 25, y: 0 });
-        $('.addresses').html(address);
-        $('#tangleExplorer').html('Explore the address <a target="_blank" href="' + tangleUrl + address + '">'+address+'</a>.');
+        if (address) {
+            drawQr($wallet, address, 'L', { x: 1, y: 66 });
+            drawMultilineText($wallet, 'Address: ', address, 2, { x: 25, y: 0 });
+            $('.addresses').html(address);
+            $('#tangleExplorer').html('Explore the address <a target="_blank" href="' + tangleUrl + address + '">'+address+'</a>');
+        }
 
         // Draw Seed
         if (seed.type === 'ENCRYPTED') {
-            drawQr($wallet, seedValue, 'L', { x: -1, y: 60 });
+            drawQr($wallet, seedValue, 'L', { x: -1, y: 69 });
             drawMultilineText($wallet, 'Encrypted seed: ', seedValue, 2, { x: -25, y: -1 });
         } else {
             //drawStamp($lo, 'CENSORED', 55);
@@ -604,15 +608,6 @@ $(function () {
         else
             state.type = vault.guessEncoding(seed);
 
-        if (options) {
-            state.scrypt = {};
-            if (options[0] === 'P' && options.length > 1) {
-                var p = parseInt(options[1]);
-                if (p)
-                    state.scrypt.p = p;
-            }
-
-        }
         return state;
     }
 

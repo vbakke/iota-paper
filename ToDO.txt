@@ -1,19 +1,15 @@
 ToDo
 ====
- 
- - Make extra templates for wallets
- - Parameterize walletsize, QR and text positions 
  - Consolidate common functionality across drawXxx functions
- 
  - Update Algorithm pane
- - New Layout ()
-
-
-- Add balance of address
+ - Add balance of address
 
 
  Done 
  ====
+ - Parameterize walletsize, QR and text positions 
+ - Make extra templates for wallets
+ - New Layout ()
  - Blur passphrase color: transparent;text-shadow: 0 0 9px rgba(0,0,0,0.7);
  - Make printable 
  - Put seed and QR on same Canvas

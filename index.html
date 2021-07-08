@@ -1,15 +1,16 @@
-<html>
-
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="bundle.js"></script>
   <link rel="stylesheet" href="./css/main.css" type="text/css" media="all">
+  <title>Encryptet paper wallets for IOTA</title>
 </head>
 
 <body>
   <div class="header">
     <div style="height: 10px"> </div>
-    <h1 class="pagetitle">Secure paper wallets for your IOTA</h1>
+    <h1 class="pagetitle">Encryptet paper wallets for IOTA</h1>
     <div class="pagesubtitle">Encrypt your seed for safekeeping</div>
   </div>
   <div class="content">
@@ -30,7 +31,9 @@
             <div class="vflex">
               <div class="hflex">
                 <select class="scrypt-T">
-                  <option value="0">Standard</option>
+                  <option value="-2">Toughness -2</option>
+                  <option value="-1">Toughness -1</option>
+                  <option value="0" selected>Standard</option>
                   <option value="1">Toughness +1</option>
                   <option value="2">Toughness +2</option>
                   <option value="3">Toughness +3</option>
@@ -49,65 +52,52 @@
           <div class="wallet ">
             <canvas class="wallet-canvas" width="900" height="450" style="width: 450; height: 225"></canvas>
             <canvas class="logo" width="100px" height="100px" style="width:100px;height:100px"></canvas>
-            <canvas class="camfeed" width="160px" height="160px"></canvas>
-            <img class="wallet-img hidden" >
+            <canvas class="camfeed" width="150px" height="150px"></canvas>
+            <img alt="" class="wallet-img hidden" >
           </div>
         </div>
         <div id="tangleExplorer"></div>
         <div id="warning"></div>
         <div id="story">
-          <h2>Why bother...?</h2>
-          <p><i>Encrypted</i> paper* wallets solve a number of security issues; such as someone finding your piece of
-            paper,
-            or unauthorized snapshot of your screen, clipboard, print spooler or printer memory, etc.
+          <h2>About the algorithm</h2>
+          <p>
+            This algorithm uses <i>Argon2</i>, which is a hash function designed to be <i>slow</i>. 
+            (As opposed to SHA hashing, which are designed to be fast.) The whole point is that it 
+            should be very expensive to bruteforce. Similar to bcrypt, scrypt, etc; often uses to store
+            encrypted passwords safely.
           </p>
           <p>
-            <i>
-              (* Using an extended interpretation of the word ‘paper’, here. : )
-            </i>
+            Computer encryptions all use XOR to encrypt the message, based on a secret key. 
+            But is the message is longer than the secret key, you need a secure way to recalculate
+            a new key, 
           </p>
           <p>
-            The project <a href="https://github.com/vbakke/tryte-encrypt/">vbakke/tryte-encrypt</a> is a draft and a
-            discussion
-            point for something that I hope will end up in an approved standard, because I believe most of today's
-            IOTA software
-            are missing this feature.
+            This algorithm exploits that fact that the secret key is just as long as the secret message (the seed).
+            And by avoiding AES, we don't open for the potential side attacks the different AES modes have.
+          </p>
+          <h2>The algorithm</h2>
+          <p>
+            <ul>
+              <p>Encrypt the seed</p>
+              <li><i>binary seed</i> = make a 32 byte value from 24 word mnemonic</li>
+              <li><i>salt</i> = cryptographic 8 byte random salt</li>
+              <li><i>key64</i> = 64 byte key, using Argon2id(<i>passphrase</i>, <i>salt</i>)</li>
+              <li>split <i>key64</i> into <i>key1</i> + <i>key2</i>, each 32 bytes long</li>
+              <li><i>encrypted seed</i> = <i>binary seed</i> XOR <i>key1</i></li>
+              <p>Generate a checksum</p>
+              <li><i>checksum</i> = Argon2id(<i>key2</i>, <i>encrypted seed</i>)</li>
+              <p>Prepare QR code</p>
+              <li><i>version</i> = byte value 0x01</li>
+              <li><i>QR bytes</i> = <i>version</i> + <i>encrypted seed</i> + <i>salt</i> + <i>checksum</i></li>
+              <li><i>QR value</i> = base32(<i>QR bytes</i>)  using Crockford base32</li>
+            </ul>
           </p>
           <p>
-            Press <img src="assets/cogs.png" height="18px"> to see the details of the steps of the algorithm. It is
-            loosly based on BIP38.
+            The project <a href="https://github.com/vbakke/iota-paper-encryption">vbakke/iota-paper</a> 
+            is a draft and a discussion point for something that I hope will end up in an approved 
+            standard, because I believe most of today's IOTA software are missing this feature.
           </p>
 
-
-
-          <h2>Toughness</h2>
-          <p>
-            The hash functions like SHA, are made to be fast. But bcrypt/scrypt are deliberately slow and resource
-            intensive.
-          </p>
-          <p>
-            Both bcrypt and scrypt have arguments that controll how intensive the has is. Scrypt has three arguments.
-          </p>
-          <p>
-            I have decided on a baseline level, to be the same as for BIP38 (that is, scrypt logN=14, r=8, p=8).
-            All three can be set independantly, but to simplify it, I have chosen one parameter that increases all
-            three with the same amount. (Up for discussion.)
-          </p>
-          <h2>Scanning QR codes</h2>
-          <p>
-            Both plain and encrypted QR codes can be scanned. Encrypted codes must be decrypted before an IOTA address
-            can
-            be generated.
-          </p>
-          <p>
-            When decrypting, the scrypt parameters must be exactly the same as when encrypting the seed.
-          </p>
-          <p>
-            To avoid lost funds due to forgetting the parameters, the parameters are included in the encrypted seed.
-            The delimiter chosen is colon (:), as it is not a valid tryte character, but still considered an
-            "alphanumeric"
-            character for QR codes, and keeping the compact version of the QR.
-          </p>
         </div>
       </div>
       <div id="progress" class="progress" style="display: none">
@@ -119,7 +109,7 @@
             </p>
             <p>
               Please use
-              <a href="https://github.com/vbakke/tryte-encrypt/issues">vbakke/tryte-encrypt issues</a>
+              <a href="https://github.com/vbakke/iota-paper-encryption">vbakke/iota-paper-encryption issues</a>
               to discuss pros and cons with the algorithm, such as SHA256 vs SHA3, kerl or not kerl, is that a
               question?, modes of AES encryption, scrypt’s arguments, etc.
             </p>

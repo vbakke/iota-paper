@@ -93,8 +93,8 @@ body {
 }
 .camfeed {
   position: absolute;
-  right: 7px;
-  top: 22px;
+  right: 15px;
+  top: 45px;
 }
 
 .addresses {
@@ -285,7 +285,7 @@ textarea {
   width: 210px;
 }
 
-.blurred {
+.blurred:not(:hover) {
   color: transparent;
   text-shadow: 0 0 9px rgba(0,0,0,0.7);
 }
@@ -300,6 +300,18 @@ h2 {
 
 svg  {
   stroke: #8cc4be;
+}
+
+li {
+  padding-bottom: 1rem;
+}
+
+ul p {
+  text-decoration: underline;
+  margin-left: -20px;
+}
+li i {
+  color: #5daa38;
 }
 
 .spinner {
