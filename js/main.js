@@ -344,11 +344,9 @@ $(function () {
     function displayWallet(e, seed) {
 
         let $select = $(e).find('.scrypt-T');
-        // if (seed.type == 'ADDRESS' || seed.type == 'bip39') {
-            // $select.val("0");
-            // $select.removeAttr('disabled');
-        // } else 
-        if (seed.type == 'ENCRYPTED') {
+        if (seed.type == 'ADDRESS' || seed.type == 'bip39') {
+            // pass
+        } else if (seed.type == 'ENCRYPTED') {
             let opts = seed.value.split(':')[1] || '0';
             if (opts[0] == 'T') opts = opts.slice(1);
             if ($select.children("[value='" + opts + "']").length) {

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify js/main.js -o bundle.js",
-    "watch": "watchify js/main.js -o bundle.js --debug --verbose"
+    "watch": "watchify js/main.js -o bundle.js",
+    "develop": "watchify js/main.js -o bundle.js --debug --verbose"
   },
   "author": "vbakke",
   "license": "MIT",

@@ -82,8 +82,8 @@ body {
 .wallet {
   border: solid 1px #6c89c0;
   margin-top: 3px; 
-  min-width: 450px;
-  max-width: 450px;
+  min-width: 500px;
+  max-width: 500px;
   position: relative;
 }
 .logo {
